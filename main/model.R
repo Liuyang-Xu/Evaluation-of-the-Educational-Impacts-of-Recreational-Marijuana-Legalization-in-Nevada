@@ -1,5 +1,6 @@
-################################################################################
-# library
+# ********************************************************************************
+# ==== 1. Library ====
+# ********************************************************************************
 library(did)
 library(tidyverse)
 library(patchwork)
@@ -7,10 +8,11 @@ library(ggplot2)
 library(corrplot)
 library(MASS)
 library(tableone)
-################################################################################
 
-################################################################################
-# load the data
+
+# ********************************************************************************
+# ==== 2. Load Data ====
+# ********************************************************************************
 graduation <- read_csv("marijuanna_data_for_analysis.csv")
 geo <- read_csv("geo_data_2011_2022_NV.csv")
 
@@ -18,19 +20,15 @@ graduation <- graduation %>%
   dplyr::select(County, `School District`, fips, `Graduating Class`, `Graduation Rate`) %>%
   mutate(`Graduation Rate` = ifelse(`Graduation Rate` == ">95", 95, `Graduation Rate`),
          `Graduation Rate` = as.numeric(`Graduation Rate`),
-         `Recreational Status` = as.factor(ifelse(County == "Churchill County" |
-                                                    County == "Clark County" |
-                                                    County == "Elko County" |
-                                                    County == "Humboldt County" |
-                                                    County == "Lyon County" |
-                                                    County == "Nye County" |
-                                                    County == "Washoe County" |
-                                                    County == "White Pine County", 1, 0))) %>% na.omit()
-################################################################################
+         `Recreational Status` = as.factor(ifelse(County %in% c("Churchill County", "Clark County", 
+                                                                "Elko County", "Humboldt County", 
+                                                                "Lyon County", "Nye County", "Washoe County", 
+                                                                "White Pine County"), 1, 0))) %>% na.omit()
 
-################################################################################
-# visualize the outcome
 
+# ********************************************************************************
+# ==== 3. Outcome Visualization ====
+# ********************************************************************************
 # ggplot(data = graduation) +
 #   geom_point(aes(x = `Graduating Class`, y = `Graduation Rate`, color = `Recreational Status`))
 
@@ -71,11 +69,15 @@ covariates_names <- colnames(dta_joined)[8:20]
 covariates_names
 ggplot(data = dta_joined, aes(x = year, y = FRL_eligible_number, group = fips)) +
   geom_point(aes(color = `School District`))
-################################################################################
 
-################################################################################
-# model
-# plain
+
+# ********************************************************************************
+# ==== 4. Model ====
+# ********************************************************************************
+
+# ***************************************
+# ==== 4.1 Model - Plain ====
+# ***************************************
 geo <- geo %>% 
   mutate(fips = FIPS) %>% 
   dplyr::select(-FIPS, -state_name, -LEAID)
@@ -170,12 +172,12 @@ ggdid(es)
 # compute this overall average treatment effect parameter
 group_effects <- aggte(out, type = "group")
 summary(group_effects)
-################################################################################
 
-################################################################################
-# model**
-## please reload the data in the beginning first
 
+# ***************************************
+# ==== 4.2 Model - 2 formats ====
+# ***************************************
+# please reload the data in the beginning first
 geo <- geo %>% 
   mutate(fips = FIPS) %>% 
   dplyr::select(-FIPS, -state_name, -LEAID)
@@ -221,6 +223,7 @@ didreg_wc.step <- stepAIC(didreg_wc,
                                      upper = didreg_wc ))
 summary(didreg_wc.step)
 
+
 ## 2. collapse time
 dta_joined <- dta %>% 
   left_join(geo, by = c("year", "fips")) %>% 
@@ -251,4 +254,4 @@ didreg_wc.step <- stepAIC(didreg_wc,
                           scope=list(lower=as.formula(`Graduation Rate` ~ `Recreational Status`*time.new), 
                                      upper = didreg_wc ))
 summary(didreg_wc.step)
-################################################################################
+
