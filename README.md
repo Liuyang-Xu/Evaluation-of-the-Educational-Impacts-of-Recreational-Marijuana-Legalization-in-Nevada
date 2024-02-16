@@ -10,9 +10,9 @@
 3. model.R is for
 	* Descriptive statistics and visualization
  	* Model application
-             a. Simple Difference in Differences(DID)
-             b. DID with all the years before and after legalization
-             c. DID with Multiple Time Periods
+             * Simple Difference in Differences(DID)
+             * DID with all the years before and after legalization
+             * DID with Multiple Time Periods
      * Result Visualizations
 
 * Out_Graphs inside main folder includes the plots used in the paper
