@@ -1,4 +1,4 @@
-## main folder:
+## Folder main:
 1. Geo_Data.R is for data cleaning and manipulation
 2. NV_map.R is for plotting the US and Nevada marijuana usage status
 3. model.R is for
